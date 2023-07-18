@@ -1,0 +1,55 @@
+#include<stdio.h>
+#include<iostream>
+using namespace std;
+int s[10];
+int d[100];
+int ans;
+void ini()
+{
+	for (int i = 0; i <= 8; i++)
+	{
+		s[i] = i;
+		d[i] = 0;
+	}
+}
+int f(int x)
+{//带权值的路径压缩
+	if (x != s[x])
+	{
+		int t = s[x];//记录父节点
+		s[x] = f(s[x]);//路径压缩，递归最后返回的是根结点
+		d[x] = (d[x] + d[t]) % 3;//权值更新为x到根节点的权值
+	}
+	return s[x];
+}
+void m(int x, int y, int r)
+{
+	int rx = f(x); int ry = f(y);
+	if (rx == ry)
+	{
+		if ((r - 1) != ((d[x] - d[y] + 3) % 3))//判断矛盾
+			ans++;
+	}
+	else
+	{
+		s[rx] = ry;//合并
+		d[rx] = (d[y] - d[x] + r - 1) % 3;//更新权值
+	}
+}
+int main()
+{
+	int n, k;
+	cin >> n >> k;
+	ini();
+	ans = 0;
+	while (k--)
+	{
+		int r, x, y;
+		scanf_s("%d%d%d", &r, &x, &y);
+		if (x > n || y > n || r == 2 && x == y)
+			ans++;
+		else m(x, y, r);
+	}
+	cout << ans;
+	return 0;
+}
